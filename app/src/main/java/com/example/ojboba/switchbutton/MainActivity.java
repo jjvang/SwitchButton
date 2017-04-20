@@ -3,7 +3,11 @@ package com.example.ojboba.switchbutton;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -12,10 +16,11 @@ import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    Switch simpleSwitch1;
+    Switch simpleSwitch1, simpleSwitch2;
     boolean switchState2 = false;
     SharedPreferences sharedPrefs;
     int language = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +28,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // initiate view's
         simpleSwitch1 = (Switch) findViewById(R.id.simpleSwitch1);
+        simpleSwitch2 = (Switch) findViewById(R.id.menuSwitch);
 
         // Having two preference managers or preferences fucks up your code
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        simpleSwitch1.setChecked(sharedPrefs.getBoolean("NameOfThingToSave",false));
-
+        simpleSwitch1.setChecked(sharedPrefs.getBoolean("NameOfThingToSave", false));
         switchState2 = sharedPrefs.getBoolean("NameOfThingToSave", false);
+
+
+
+        if (switchState2 == true) {
+            language = 0;
+            Toast.makeText(this, "BUTTON IS ON " + switchState2, Toast.LENGTH_SHORT).show();
+        } else {
+            language = 10;
+            Toast.makeText(this, "Button is off " + switchState2, Toast.LENGTH_SHORT).show();
+        }
 
         final ToggleButton tgbutton;
         tgbutton = (ToggleButton) findViewById(R.id.toggle);
@@ -55,13 +70,15 @@ public class MainActivity extends AppCompatActivity {
         simpleSwitch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     language = 0;
-                    sharedPrefs.edit().putBoolean("NameOfThingToSave", true).commit();
+                    sharedPrefs.edit().putBoolean("NameOfThingToSave", simpleSwitch1.isChecked()).commit();
+                    switchState2 = sharedPrefs.getBoolean("NameOfThingToSave", false);
                     Toast.makeText(MainActivity.this, "This is on " + language + switchState2, Toast.LENGTH_SHORT).show();
                 } else {
                     language = 10;
-                    sharedPrefs.edit().putBoolean("NameOfThingToSave", false).commit();
+                    sharedPrefs.edit().putBoolean("NameOfThingToSave", simpleSwitch1.isChecked()).commit();
+                    switchState2 = sharedPrefs.getBoolean("NameOfThingToSave", false);
                     Toast.makeText(MainActivity.this, "This is off " + language + switchState2, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -86,7 +103,50 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem menuItem = menu.findItem(R.id.myswitch);
+        View view = MenuItemCompat.getActionView(menuItem);
+        simpleSwitch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    sharedPrefs.edit().putBoolean("NameOfThingToSave2", simpleSwitch2.isChecked()).commit();
+                    switchState2 = sharedPrefs.getBoolean("NameOfThingToSave2", simpleSwitch2.isChecked());
+                    Toast.makeText(MainActivity.this, "This is on " + switchState2, Toast.LENGTH_SHORT).show();
+                } else {
+                    sharedPrefs.edit().putBoolean("NameOfThingToSave2", simpleSwitch2.isChecked()).commit();
+                    switchState2 = sharedPrefs.getBoolean("NameOfThingToSave2", simpleSwitch2.isChecked());
+                    Toast.makeText(MainActivity.this, "This is off " + switchState2, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        simpleSwitch2.setChecked(sharedPrefs.getBoolean("NameOfThingToSave2",false));
+        switchState2 = sharedPrefs.getBoolean("NameOfThingToSave2", this.simpleSwitch2.isChecked());
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.myswitch:
+                return true;
+            case android.R.id.home:
+                // Navigate back to parent activity (CatalogActivity)
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+        }
+        return true;
+    }
+
 }
 
 //        simpleSwitch2 = (Switch) findViewById(R.id.simpleSwitch2);
