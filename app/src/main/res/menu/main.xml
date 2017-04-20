@@ -7,4 +7,11 @@
         app:actionLayout="@layout/activity_switch_layout"
         />
 
+    <item
+        android:id="@+id/myToggle"
+        android:title=""
+        app:showAsAction="always"
+        app:actionLayout="@layout/activity_toggle"
+        />
+
 </menu>

@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     Switch simpleSwitch1, simpleSwitch2;
     boolean switchState2 = false;
+    ToggleButton menuToggle;
     SharedPreferences sharedPrefs;
     int language = 0;
 
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // initiate view's
         simpleSwitch1 = (Switch) findViewById(R.id.simpleSwitch1);
-        simpleSwitch2 = (Switch) findViewById(R.id.menuSwitch);
+//        simpleSwitch2 = (Switch) findViewById(R.id.menuSwitch);
 
         // Having two preference managers or preferences fucks up your code
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem menuItem = menu.findItem(R.id.myswitch);
         View view = MenuItemCompat.getActionView(menuItem);
+        simpleSwitch2 = (Switch) view.findViewById(R.id.menuSwitch);
         simpleSwitch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -125,6 +127,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        MenuItem menuItem2 = menu.findItem(R.id.myToggle);
+        View view2 = MenuItemCompat.getActionView(menuItem2);
+        menuToggle = (ToggleButton) view2.findViewById(R.id.menuToggle);
+        menuToggle.setChecked(sharedPrefs.getBoolean("toggleButton", false));  //default is false
+        menuToggle.setOnClickListener(new ToggleButton.OnClickListener() {
+            public void onClick(View v) {
+                sharedPrefs.edit().putBoolean("toggleButton", menuToggle.isChecked()).commit();
+            }
+        });
+
 
         simpleSwitch2.setChecked(sharedPrefs.getBoolean("NameOfThingToSave2",false));
         switchState2 = sharedPrefs.getBoolean("NameOfThingToSave2", this.simpleSwitch2.isChecked());
